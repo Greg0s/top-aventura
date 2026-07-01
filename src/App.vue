@@ -3,40 +3,76 @@ import { ref } from "vue";
 
 // State initialization
 const isPlaying = ref(false);
+const showOptions = ref(false); // Options are collapsed by default
 const playerCount = ref(2);
+const maxPlayers = ref(10);
+const allowRepeat = ref(false);
 const currentPlayerIndex = ref(0);
 const isNumberRevealed = ref(false);
 const playerNumbers = ref<number[]>([]);
 
 // Home screen handlers
-const increment = () => {
-  if (playerCount.value < 10) {
+const incrementPlayerCount = () => {
+  if (playerCount.value < maxPlayers.value) {
     playerCount.value++;
   }
 };
 
-const decrement = () => {
+const decrementPlayerCount = () => {
   if (playerCount.value > 1) {
     playerCount.value--;
   }
 };
 
-const startGame = () => {
-  // Generate base numbers from 1 to 10
-  const availableNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const incrementMaxPlayers = () => {
+  if (maxPlayers.value < 100) {
+    maxPlayers.value++;
+  }
+};
 
-  // Shuffle array using Fisher-Yates algorithm
-  for (let i = availableNumbers.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    const temp = availableNumbers[i];
-    availableNumbers[i] = availableNumbers[j];
-    availableNumbers[j] = temp;
+const decrementMaxPlayers = () => {
+  if (maxPlayers.value > playerCount.value) {
+    maxPlayers.value--;
+  }
+};
+
+const toggleRepeat = () => {
+  allowRepeat.value = !allowRepeat.value;
+};
+
+const toggleOptions = () => {
+  showOptions.value = !showOptions.value;
+};
+
+const startGame = () => {
+  if (!allowRepeat.value && playerCount.value > maxPlayers.value) {
+    alert(
+      "Le nombre de joueurs ne peut pas dépasser le nombre maximum si les chiffres ne se répètent pas.",
+    );
+    return;
   }
 
-  // Extract only the required amount of unique numbers
-  playerNumbers.value = availableNumbers.slice(0, playerCount.value);
+  if (!allowRepeat.value) {
+    const availableNumbers = Array.from(
+      { length: maxPlayers.value },
+      (_, i) => i + 1,
+    );
 
-  // Reset game state for the new round
+    for (let i = availableNumbers.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const temp = availableNumbers[i];
+      availableNumbers[i] = availableNumbers[j];
+      availableNumbers[j] = temp;
+    }
+
+    playerNumbers.value = availableNumbers.slice(0, playerCount.value);
+  } else {
+    playerNumbers.value = Array.from(
+      { length: playerCount.value },
+      () => Math.floor(Math.random() * maxPlayers.value) + 1,
+    );
+  }
+
   currentPlayerIndex.value = 0;
   isNumberRevealed.value = false;
   isPlaying.value = true;
@@ -49,11 +85,9 @@ const revealNumber = () => {
 
 const nextPlayer = () => {
   if (currentPlayerIndex.value < playerCount.value - 1) {
-    // Progress to the next player
     currentPlayerIndex.value++;
     isNumberRevealed.value = false;
   } else {
-    // Max players reached, return to home screen
     isPlaying.value = false;
   }
 };
@@ -69,52 +103,114 @@ const nextPlayer = () => {
 
     <div
       v-if="!isPlaying"
-      class="flex-1 flex flex-col items-center justify-between py-12 px-8 z-10"
+      class="flex-1 flex flex-col items-center justify-between py-8 px-8 z-10 overflow-y-auto"
     >
-      <div class="flex flex-col items-center">
-        <div
-          class="w-32 h-32 bg-white rounded-[2.5rem] shadow-soft flex items-center justify-center border-4 border-orange-200 mb-4"
-        >
-          <span class="text-6xl">🦊</span>
-        </div>
-        <h1
-          class="font-['Oi'] text-3xl text-orange-900 text-center tracking-wide"
-        >
-          Top Aventura
-        </h1>
+      <div class="flex flex-col items-center mt-4">
+        <img
+          src="/src/assets/top-aventura-logo.png"
+          alt="Top Aventura Logo"
+          class="h-40 aspect-[4/5] object-contain mb-2"
+        />
       </div>
 
-      <div
-        class="w-full bg-white rounded-[2.5rem] p-6 shadow-soft flex flex-col items-center border border-orange-100"
-      >
-        <p class="text-orange-900 font-semibold mb-4 text-lg">
-          Nombre de joueurs
-        </p>
-
-        <div class="flex items-center gap-6">
-          <button
-            @click="decrement"
-            class="w-12 h-12 rounded-2xl bg-orange-100 text-orange-600 text-2xl flex items-center justify-center hover:bg-orange-200 transition-colors shadow-sm"
+      <div class="w-full flex-1 flex flex-col gap-6 justify-center">
+        <div
+          class="w-full bg-white rounded-[2.5rem] p-6 shadow-soft flex flex-col items-center border border-orange-100"
+        >
+          <p
+            class="text-orange-900 font-['Ranchers'] tracking-widest mb-4 text-xl"
           >
-            <i class="fa-solid fa-minus"></i>
+            Nombre de joueurs
+          </p>
+
+          <div class="flex items-center gap-10">
+            <button
+              @click="decrementPlayerCount"
+              class="w-12 h-12 rounded-2xl bg-orange-100 text-orange-600 text-2xl flex items-center justify-center hover:bg-orange-200 transition-colors shadow-sm"
+            >
+              <i class="fa-solid fa-minus"></i>
+            </button>
+
+            <span class="text-5xl font-['Oi'] text-orange-500 w-12 text-center">
+              {{ playerCount }}
+            </span>
+
+            <button
+              @click="incrementPlayerCount"
+              class="w-12 h-12 rounded-2xl bg-orange-400 text-white text-2xl flex items-center justify-center hover:bg-orange-500 transition-all shadow-md active:scale-95"
+            >
+              <i class="fa-solid fa-plus"></i>
+            </button>
+          </div>
+        </div>
+
+        <div
+          class="w-full bg-white rounded-[2.5rem] p-6 shadow-soft flex flex-col border border-orange-100"
+        >
+          <button
+            @click="toggleOptions"
+            class="w-full flex items-center justify-between text-orange-900 font-['Ranchers'] tracking-widest text-xl focus:outline-none"
+          >
+            <span>Options</span>
+            <i
+              class="fa-solid text-orange-400 text-sm transition-transform duration-300"
+              :class="showOptions ? 'fa-chevron-up' : 'fa-chevron-down'"
+            ></i>
           </button>
 
-          <span class="text-5xl font-['Oi'] text-orange-500 w-12 text-center">
-            {{ playerCount }}
-          </span>
-
-          <button
-            @click="increment"
-            class="w-12 h-12 rounded-2xl bg-orange-400 text-white text-2xl flex items-center justify-center hover:bg-orange-500 transition-all shadow-md active:scale-95"
+          <div
+            v-if="showOptions"
+            class="flex flex-col gap-5 mt-5 border-t border-orange-50 pt-4 animate-fade-in"
           >
-            <i class="fa-solid fa-plus"></i>
-          </button>
+            <div class="flex flex-col items-center gap-3">
+              <p class="text-orange-900 font-semibold text-base">
+                Nombre maximum
+              </p>
+              <div class="flex items-center gap-10">
+                <button
+                  @click="decrementMaxPlayers"
+                  class="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 text-xl flex items-center justify-center hover:bg-orange-200 transition-colors shadow-sm"
+                >
+                  <i class="fa-solid fa-minus"></i>
+                </button>
+
+                <span
+                  class="text-3xl font-['Oi'] text-orange-500 w-12 text-center"
+                >
+                  {{ maxPlayers }}
+                </span>
+
+                <button
+                  @click="incrementMaxPlayers"
+                  class="w-10 h-10 rounded-xl bg-orange-400 text-white text-xl flex items-center justify-center hover:bg-orange-500 transition-all shadow-md active:scale-95"
+                >
+                  <i class="fa-solid fa-plus"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between gap-4">
+              <p class="text-orange-900 font-semibold text-base flex-1">
+                Permettre la répétition
+              </p>
+              <button
+                @click="toggleRepeat"
+                class="w-14 h-8 rounded-full transition-colors flex items-center px-1"
+                :class="allowRepeat ? 'bg-orange-400' : 'bg-orange-100'"
+              >
+                <div
+                  class="w-6 h-6 rounded-full bg-white shadow-md transition-transform"
+                  :class="allowRepeat ? 'translate-x-6' : 'translate-x-0'"
+                ></div>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
       <button
         @click="startGame"
-        class="w-full h-16 bg-orange-400 hover:bg-orange-500 text-white font-['Oi'] text-xl rounded-[2rem] shadow-lg shadow-orange-200 transition-all active:scale-95 flex items-center justify-center gap-3 group tracking-wider"
+        class="w-full py-5 mt-4 bg-orange-400 hover:bg-orange-500 text-white font-['Ranchers'] text-2xl rounded-[2rem] shadow-lg shadow-orange-200 transition-all active:scale-95 flex items-center justify-center gap-3 group tracking-widest"
       >
         Commencer
         <i
@@ -128,7 +224,9 @@ const nextPlayer = () => {
       class="flex-1 flex flex-col items-center justify-between py-12 px-8 z-10"
     >
       <div class="text-center mt-8">
-        <h2 class="font-['Oi'] text-4xl text-orange-900 mb-2 tracking-wide">
+        <h2
+          class="font-['Ranchers'] text-4xl text-orange-900 mb-2 tracking-widest"
+        >
           Joueur n°{{ currentPlayerIndex + 1 }}
         </h2>
       </div>
@@ -156,15 +254,15 @@ const nextPlayer = () => {
       <button
         v-if="!isNumberRevealed"
         @click="revealNumber"
-        class="w-full h-16 bg-orange-400 hover:bg-orange-500 text-white font-['Oi'] text-lg rounded-[2rem] shadow-lg shadow-orange-200 transition-all active:scale-95 tracking-wide"
+        class="w-full py-5 bg-orange-400 hover:bg-orange-500 text-white font-['Ranchers'] text-2xl rounded-[2rem] shadow-lg shadow-orange-200 transition-all active:scale-95 tracking-widest"
       >
-        Afficher le numéro
+        Afficher le numero
       </button>
 
       <button
         v-if="isNumberRevealed"
         @click="nextPlayer"
-        class="w-full h-16 bg-orange-600 hover:bg-orange-700 text-white font-['Oi'] text-lg rounded-[2rem] shadow-lg shadow-orange-300 transition-all active:scale-95 flex items-center justify-center gap-3 group tracking-wide"
+        class="w-full py-5 bg-orange-600 hover:bg-orange-700 text-white font-['Ranchers'] text-2xl rounded-[2rem] shadow-lg shadow-orange-300 transition-all active:scale-95 flex items-center justify-center gap-3 group tracking-widest"
       >
         {{
           currentPlayerIndex < playerCount - 1
@@ -186,6 +284,7 @@ const nextPlayer = () => {
 
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Honk:MORF@15&family=Oi&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Ranchers&display=swap");
 
 .shadow-soft {
   box-shadow: 0 15px 30px -10px rgba(251, 146, 60, 0.2);
@@ -193,6 +292,10 @@ const nextPlayer = () => {
 
 .animate-pop {
   animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-out 1;
 }
 
 @keyframes pop {
@@ -203,6 +306,17 @@ const nextPlayer = () => {
   100% {
     transform: scale(1);
     opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 </style>
