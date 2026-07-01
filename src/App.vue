@@ -3,7 +3,7 @@ import { ref } from "vue";
 
 // State initialization
 const isPlaying = ref(false);
-const showOptions = ref(false); // Options are collapsed by default
+const showOptions = ref(false);
 const playerCount = ref(2);
 const maxPlayers = ref(10);
 const allowRepeat = ref(false);
@@ -95,7 +95,7 @@ const nextPlayer = () => {
 
 <template>
   <div
-    class="w-[375px] h-[667px] bg-orange-50 rounded-[3rem] shadow-2xl overflow-hidden flex flex-col relative border-[8px] border-white"
+    class="min-w-[100dvw] min-h-[100dvh] bg-orange-50 rounded-[3rem] shadow-2xl overflow-hidden flex flex-col relative border-[8px] border-white"
   >
     <div
       class="absolute -top-20 -right-20 w-64 h-64 bg-orange-100 rounded-full blur-3xl opacity-50"
@@ -105,7 +105,7 @@ const nextPlayer = () => {
       v-if="!isPlaying"
       class="flex-1 flex flex-col items-center justify-between py-8 px-8 z-10 overflow-y-auto"
     >
-      <div class="flex flex-col items-center mt-4">
+      <div class="flex flex-col items-center mt-4 w-full max-w-md">
         <img
           src="/src/assets/top-aventura-logo.png"
           alt="Top Aventura Logo"
@@ -113,12 +113,14 @@ const nextPlayer = () => {
         />
       </div>
 
-      <div class="w-full flex-1 flex flex-col gap-6 justify-center">
+      <div
+        class="w-full flex-1 flex flex-col gap-6 justify-center items-center max-w-md"
+      >
         <div
           class="w-full bg-white rounded-[2.5rem] p-6 shadow-soft flex flex-col items-center border border-orange-100"
         >
           <p
-            class="text-orange-900 font-['Ranchers'] tracking-widest mb-4 text-xl"
+            class="text-orange-900 font-['Nunito'] font-black tracking-widest mb-4 text-xl"
           >
             Nombre de joueurs
           </p>
@@ -131,7 +133,9 @@ const nextPlayer = () => {
               <i class="fa-solid fa-minus"></i>
             </button>
 
-            <span class="text-5xl font-['Oi'] text-orange-500 w-12 text-center">
+            <span
+              class="text-5xl font-['Fredoka'] font-bold text-orange-500 w-12 text-center"
+            >
               {{ playerCount }}
             </span>
 
@@ -149,7 +153,7 @@ const nextPlayer = () => {
         >
           <button
             @click="toggleOptions"
-            class="w-full flex items-center justify-between text-orange-900 font-['Ranchers'] tracking-widest text-xl focus:outline-none"
+            class="w-full flex items-center justify-between text-orange-900 font-['Nunito'] font-black tracking-widest text-xl focus:outline-none"
           >
             <span>Options</span>
             <i
@@ -163,7 +167,9 @@ const nextPlayer = () => {
             class="flex flex-col gap-5 mt-5 border-t border-orange-50 pt-4 animate-fade-in"
           >
             <div class="flex flex-col items-center gap-3">
-              <p class="text-orange-900 font-semibold text-base">
+              <p
+                class="text-orange-900 font-semibold text-base font-['Nunito']"
+              >
                 Nombre maximum
               </p>
               <div class="flex items-center gap-10">
@@ -175,7 +181,7 @@ const nextPlayer = () => {
                 </button>
 
                 <span
-                  class="text-3xl font-['Oi'] text-orange-500 w-12 text-center"
+                  class="text-3xl font-['Fredoka'] font-bold text-orange-500 w-12 text-center"
                 >
                   {{ maxPlayers }}
                 </span>
@@ -190,7 +196,9 @@ const nextPlayer = () => {
             </div>
 
             <div class="flex items-center justify-between gap-4">
-              <p class="text-orange-900 font-semibold text-base flex-1">
+              <p
+                class="text-orange-900 font-semibold text-base flex-1 font-['Nunito']"
+              >
                 Permettre la répétition
               </p>
               <button
@@ -210,7 +218,7 @@ const nextPlayer = () => {
 
       <button
         @click="startGame"
-        class="w-full py-5 mt-4 bg-orange-400 hover:bg-orange-500 text-white font-['Ranchers'] text-2xl rounded-[2rem] shadow-lg shadow-orange-200 transition-all active:scale-95 flex items-center justify-center gap-3 group tracking-widest"
+        class="w-full max-w-md py-5 mt-4 bg-orange-400 hover:bg-orange-500 text-white font-['Nunito'] font-black text-2xl rounded-[2rem] shadow-lg shadow-orange-200 transition-all active:scale-95 flex items-center justify-center gap-3 group tracking-widest"
       >
         Commencer
         <i
@@ -223,20 +231,22 @@ const nextPlayer = () => {
       v-if="isPlaying"
       class="flex-1 flex flex-col items-center justify-between py-12 px-8 z-10"
     >
-      <div class="text-center mt-8">
+      <div class="text-center mt-8 w-full max-w-md">
         <h2
-          class="font-['Ranchers'] text-4xl text-orange-900 mb-2 tracking-widest"
+          class="font-['Nunito'] font-black text-4xl text-orange-900 mb-2 tracking-widest"
         >
           Joueur n°{{ currentPlayerIndex + 1 }}
         </h2>
       </div>
 
-      <div class="flex-1 w-full flex flex-col items-center justify-center">
+      <div
+        class="flex-1 w-full flex flex-col items-center justify-center max-w-md"
+      >
         <div
           v-if="isNumberRevealed"
           class="w-48 h-48 bg-white rounded-full shadow-soft flex items-center justify-center border-8 border-orange-400 animate-pop"
         >
-          <span class="font-['Oi'] text-8xl text-orange-500">{{
+          <span class="font-['Fredoka'] font-bold text-8xl text-orange-500">{{
             playerNumbers[currentPlayerIndex]
           }}</span>
         </div>
@@ -254,15 +264,15 @@ const nextPlayer = () => {
       <button
         v-if="!isNumberRevealed"
         @click="revealNumber"
-        class="w-full py-5 bg-orange-400 hover:bg-orange-500 text-white font-['Ranchers'] text-2xl rounded-[2rem] shadow-lg shadow-orange-200 transition-all active:scale-95 tracking-widest"
+        class="w-full max-w-md py-5 bg-orange-400 hover:bg-orange-500 text-white font-['Nunito'] font-black text-2xl rounded-[2rem] shadow-lg shadow-orange-200 transition-all active:scale-95 tracking-widest"
       >
-        Afficher le numero
+        Afficher le numéro
       </button>
 
       <button
         v-if="isNumberRevealed"
         @click="nextPlayer"
-        class="w-full py-5 bg-orange-600 hover:bg-orange-700 text-white font-['Ranchers'] text-2xl rounded-[2rem] shadow-lg shadow-orange-300 transition-all active:scale-95 flex items-center justify-center gap-3 group tracking-widest"
+        class="w-full max-w-md py-5 pr-5 pl-5 bg-orange-600 hover:bg-orange-700 text-white font-['Nunito'] font-black text-2xl rounded-[2rem] shadow-lg shadow-orange-300 transition-all active:scale-95 flex items-center justify-center gap-3 group tracking-widest"
       >
         {{
           currentPlayerIndex < playerCount - 1
@@ -283,8 +293,7 @@ const nextPlayer = () => {
 </template>
 
 <style scoped>
-@import url("https://fonts.googleapis.com/css2?family=Honk:MORF@15&family=Oi&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Ranchers&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
 
 .shadow-soft {
   box-shadow: 0 15px 30px -10px rgba(251, 146, 60, 0.2);
