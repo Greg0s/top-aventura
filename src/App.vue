@@ -95,7 +95,7 @@ const nextPlayer = () => {
 
 <template>
   <div
-    class="min-w-[100dvw] min-h-[100dvh] bg-orange-50 rounded-[3rem] shadow-2xl overflow-hidden flex flex-col relative border-[8px] border-white"
+    class="min-w-[100dvw] min-h-[100dvh] bg-orange-50 rounded-[3rem] shadow-2xl overflow-hidden flex flex-col relative"
   >
     <div
       class="absolute -top-20 -right-20 w-64 h-64 bg-orange-100 rounded-full blur-3xl opacity-50"
@@ -109,7 +109,7 @@ const nextPlayer = () => {
         <img
           src="/src/assets/top-aventura-logo.png"
           alt="Top Aventura Logo"
-          class="h-40 aspect-[4/5] object-contain mb-2"
+          class="h-80 aspect-[4/5] object-contain mb-2"
         />
       </div>
 
@@ -124,7 +124,6 @@ const nextPlayer = () => {
           >
             Nombre de joueurs
           </p>
-
           <div class="flex items-center gap-10">
             <button
               @click="decrementPlayerCount"
@@ -132,13 +131,11 @@ const nextPlayer = () => {
             >
               <i class="fa-solid fa-minus"></i>
             </button>
-
             <span
               class="text-5xl font-['Fredoka'] font-bold text-orange-500 w-12 text-center"
             >
               {{ playerCount }}
             </span>
-
             <button
               @click="incrementPlayerCount"
               class="w-12 h-12 rounded-2xl bg-orange-400 text-white text-2xl flex items-center justify-center hover:bg-orange-500 transition-all shadow-md active:scale-95"
@@ -153,66 +150,67 @@ const nextPlayer = () => {
         >
           <button
             @click="toggleOptions"
-            class="w-full flex items-center justify-between text-orange-900 font-['Nunito'] font-black tracking-widest text-xl focus:outline-none"
+            class="w-full relative flex items-center justify-center text-orange-900 font-['Nunito'] font-black tracking-widest text-xl focus:outline-none"
           >
             <span>Options</span>
             <i
-              class="fa-solid text-orange-400 text-sm transition-transform duration-300"
+              class="fa-solid absolute right-0 text-orange-400 text-sm transition-transform duration-300"
               :class="showOptions ? 'fa-chevron-up' : 'fa-chevron-down'"
             ></i>
           </button>
 
-          <div
-            v-if="showOptions"
-            class="flex flex-col gap-5 mt-5 border-t border-orange-50 pt-4 animate-fade-in"
-          >
-            <div class="flex flex-col items-center gap-3">
-              <p
-                class="text-orange-900 font-semibold text-base font-['Nunito']"
+          <Transition name="expand">
+            <div v-if="showOptions" class="overflow-hidden">
+              <div
+                class="flex flex-col gap-6 mt-5 border-t border-orange-50 pt-5"
               >
-                Nombre maximum
-              </p>
-              <div class="flex items-center gap-10">
-                <button
-                  @click="decrementMaxPlayers"
-                  class="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 text-xl flex items-center justify-center hover:bg-orange-200 transition-colors shadow-sm"
-                >
-                  <i class="fa-solid fa-minus"></i>
-                </button>
+                <div class="flex flex-col items-center gap-3">
+                  <p
+                    class="text-orange-900 font-semibold text-base font-['Nunito'] text-center"
+                  >
+                    Nombre maximum
+                  </p>
+                  <div class="flex items-center gap-10">
+                    <button
+                      @click="decrementMaxPlayers"
+                      class="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 text-xl flex items-center justify-center hover:bg-orange-200 transition-colors shadow-sm"
+                    >
+                      <i class="fa-solid fa-minus"></i>
+                    </button>
+                    <span
+                      class="text-3xl font-['Fredoka'] font-bold text-orange-500 w-12 text-center"
+                    >
+                      {{ maxPlayers }}
+                    </span>
+                    <button
+                      @click="incrementMaxPlayers"
+                      class="w-10 h-10 rounded-xl bg-orange-400 text-white text-xl flex items-center justify-center hover:bg-orange-500 transition-all shadow-md active:scale-95"
+                    >
+                      <i class="fa-solid fa-plus"></i>
+                    </button>
+                  </div>
+                </div>
 
-                <span
-                  class="text-3xl font-['Fredoka'] font-bold text-orange-500 w-12 text-center"
-                >
-                  {{ maxPlayers }}
-                </span>
-
-                <button
-                  @click="incrementMaxPlayers"
-                  class="w-10 h-10 rounded-xl bg-orange-400 text-white text-xl flex items-center justify-center hover:bg-orange-500 transition-all shadow-md active:scale-95"
-                >
-                  <i class="fa-solid fa-plus"></i>
-                </button>
+                <div class="flex flex-col items-center gap-3">
+                  <p
+                    class="text-orange-900 font-semibold text-base font-['Nunito'] text-center"
+                  >
+                    Permettre la répétition
+                  </p>
+                  <button
+                    @click="toggleRepeat"
+                    class="w-14 h-8 rounded-full transition-colors flex items-center px-1"
+                    :class="allowRepeat ? 'bg-orange-400' : 'bg-orange-100'"
+                  >
+                    <div
+                      class="w-6 h-6 rounded-full bg-white shadow-md transition-transform"
+                      :class="allowRepeat ? 'translate-x-6' : 'translate-x-0'"
+                    ></div>
+                  </button>
+                </div>
               </div>
             </div>
-
-            <div class="flex items-center justify-between gap-4">
-              <p
-                class="text-orange-900 font-semibold text-base flex-1 font-['Nunito']"
-              >
-                Permettre la répétition
-              </p>
-              <button
-                @click="toggleRepeat"
-                class="w-14 h-8 rounded-full transition-colors flex items-center px-1"
-                :class="allowRepeat ? 'bg-orange-400' : 'bg-orange-100'"
-              >
-                <div
-                  class="w-6 h-6 rounded-full bg-white shadow-md transition-transform"
-                  :class="allowRepeat ? 'translate-x-6' : 'translate-x-0'"
-                ></div>
-              </button>
-            </div>
-          </div>
+          </Transition>
         </div>
       </div>
 
@@ -246,11 +244,10 @@ const nextPlayer = () => {
           v-if="isNumberRevealed"
           class="w-48 h-48 bg-white rounded-full shadow-soft flex items-center justify-center border-8 border-orange-400 animate-pop"
         >
-          <span class="font-['Fredoka'] font-bold text-8xl text-orange-500">{{
-            playerNumbers[currentPlayerIndex]
-          }}</span>
+          <span class="font-['Fredoka'] font-bold text-8xl text-orange-500">
+            {{ playerNumbers[currentPlayerIndex] }}
+          </span>
         </div>
-
         <div
           v-else
           class="w-48 h-48 bg-orange-200 rounded-full shadow-inner flex items-center justify-center border-8 border-dashed border-orange-400"
@@ -303,8 +300,20 @@ const nextPlayer = () => {
   animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1;
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.2s ease-out 1;
+/* Options expand/collapse transition */
+.expand-enter-active,
+.expand-leave-active {
+  transition:
+    max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.2s ease-in-out;
+  max-height: 300px;
+  opacity: 1;
+}
+
+.expand-enter-from,
+.expand-leave-to {
+  max-height: 0;
+  opacity: 0;
 }
 
 @keyframes pop {
@@ -315,17 +324,6 @@ const nextPlayer = () => {
   100% {
     transform: scale(1);
     opacity: 1;
-  }
-}
-
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 </style>
